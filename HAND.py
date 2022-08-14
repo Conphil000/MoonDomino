@@ -24,16 +24,22 @@ class HAND:
             if self._hand[i] == DOMINO:
                 self._usable[i] = 0
     def HAND(self,):
-        return [i.GET() for i in self.USABLE()]
+        return [i for i in self.USABLE()]
+    def STARTER_HAND(self,):
+        return [i.GET() for i in self._hand]
     def PLAYABLE(self, lead = None):
         if lead == None:
             lead = 7
-        t1 = [i for i in self.HAND() if str(lead) in i]
+        t1 = [i for i in self.HAND() if str(lead) in i.GET()]
         if len(t1) > 0:
             return t1
         else:
             return self.HAND()
-        
+    def PLAY(self,DOMINO):
+        self.KILL(DOMINO)
+    def SET_HAND(self,hand):
+        self._hand = hand
+        self._usable = len(hand)*[1]
 if __name__ == '__main__':
     from DOMINO import DOMINO
     
@@ -58,17 +64,20 @@ if __name__ == '__main__':
     hand2.ADD(DOMINO(3,6))
     hand2.ADD(DOMINO(3,4))
         
-    print(hand2.HAND())
+    def show_deck(deck):
+        print([i.GET() for i in deck])
+        
+    print(show_deck((hand2.HAND())))
     print('If 3 is lead you could play')
-    print(hand2.PLAYABLE(3))
+    print(show_deck(hand2.PLAYABLE(3)))
     assert len(hand2.PLAYABLE(3)) == 3
-    print(hand2.HAND())
+    print(show_deck(hand2.HAND()))
     print('If 5 is lead you could play')
-    print(hand2.PLAYABLE(5))
+    print(show_deck(hand2.PLAYABLE(5)))
     assert len(hand2.PLAYABLE(5)) == 4
-    print(hand2.HAND())
+    print(show_deck(hand2.HAND()))
     print('If 6 is lead you could play')
-    print(hand2.PLAYABLE(6))
+    print(show_deck(hand2.PLAYABLE(6)))
     assert len(hand2.PLAYABLE(6)) == 2
     
     
