@@ -7,6 +7,7 @@ This is a temporary script file.
 
 
 # This is a Domino, u can flip me, u can print me, u can get me, u can look if i a trump.
+
 import numpy as np 
 
 class DOMINO:
