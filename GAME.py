@@ -39,54 +39,36 @@ class GAME:
         # ace_trump > trump > ace > max_suit
         
         check_me = [(i,j,k) for i,j,k in zip(is_ace,is_trump,is_suit)]
-        print([i.GET() for i in moves])
-        print(check_me)
-        print(sum([1 if i[0] and i[1] else 0 for i in check_me]))
-        print(sum([1 if i[1] and i[2] else 0 for i in check_me]))
-        print(sum([1 if i[2] else 0 for i in check_me]))
         
+        cond1 = [1 if i[0] and i[1] else 0 for i in check_me] # Ace Trump is Played
+        cond4 = [1 if i[1] else 0 for i in check_me] # A Trump has been played.
         
-        # [1 if i[1] for i in check_me]
+        cond2 = [1 if i[0] and i[2] else 0 for i in check_me] # Ace of Suit is Played
+        cond3 = [1 if i[2] else 0 for i in check_me]
         
-        if trump == None:
-            ace = [i.ACE() for i in moves]
-            
-            if sum(ace) > 0:
-                idx = ace.index(True)
-                print(idx)
-                if str(lead_suit) in moves[idx].GET():
-                    # print(f'Ace {lead_suit} found')
-                    return idx
-                
-            keep = [i.GET().replace(str(lead_suit),'') if str(lead_suit) in i.GET() else -999 for i in moves]
-            
-            # print()
-            idx = keep.index(str(max([int(i) for i in keep])))
-            
-            # print(keep,idx)
-            return idx
-        else:
-            raise NotImplementedError
-            # ace = [i.ACE() for i in moves]
-            # trumps = [i.TRUMP(trump) for i in moves]
-            # print(trumps)
-            # if sum(trumps) > 0:
-                
-            #     print([i.GET() if j else -999 for i,j in zip(moves,trumps)])
-                
-            #     pass
-                
-            
-            
-            # if sum(ace) > 0:
-            #     idx = ace.index(True)
-            #     if (str(lead_suit) in moves[idx].GET()) and (sum(trump) == 0):
-            #         pass
-            
-            
-            
-            
-            
+        # Ace Trump
+        if sum(cond1) == 1:
+            # This means that someone played the ace trump, they will win.
+            return cond1.index(1)
+        
+        # Any Trump
+        if sum(cond4) == 1: # One Person played a trump 
+            return cond4.index(1)
+        elif sum(cond4) > 1: # More that one person played a trump
+            t_idx = [int(i.GET().replace(str(trump),'')) if j else -999 for i,j in zip(moves,is_trump)]
+            return t_idx.index(max(t_idx))
+        
+        # Ace Suit
+        # print(check_me)
+        if sum(cond2) == 1: # Someone played the ace of suit
+            return cond2.index(1)
+        
+        # Someone played a lower Suit
+        # print([i.GET().replace(str(lead_suit),'') if j else -999 for i,j in zip(moves,cond3)])
+        
+        t_idx = [int(i.GET().replace(str(lead_suit),'')) if j else -999 for i,j in zip(moves,cond3)]
+        return t_idx.index(max(t_idx))
+    
     
     def RANDOM_GAME(self,starter = 0):
         self._starter = starter
@@ -172,12 +154,11 @@ if __name__ == '__main__':
     
     assert g1.HAND_WINNER([DOMINO(3,3),DOMINO(2,2),DOMINO(1,5)], 1, None) == 2
     assert g1.HAND_WINNER([DOMINO(3,3),DOMINO(2,2),DOMINO(1,5)], 3, None) == 0
-    
-    assert g1.HAND_WINNER([DOMINO(3,5),DOMINO(1,1),DOMINO(3,3)], 3, None) == 0
+    assert g1.HAND_WINNER([DOMINO(3,5),DOMINO(1,1),DOMINO(3,3)], 3, None) == 2
     
     assert g1.HAND_WINNER([DOMINO(5,5),DOMINO(5,3),DOMINO(1,1)], 1, 5) == 0
-    
-    assert g1.HAND_WINNER([DOMINO(3,3),DOMINO(2,2),DOMINO(1,5)], 3, 2) == 0
+
+    assert g1.HAND_WINNER([DOMINO(3,3),DOMINO(2,2),DOMINO(1,5)], 3, 2) == 1
     
     for i in players:
         print(i.HAND(True))
