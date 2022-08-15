@@ -69,8 +69,9 @@ class GAME:
         t_idx = [int(i.GET().replace(str(lead_suit),'')) if j else -999 for i,j in zip(moves,cond3)]
         return t_idx.index(max(t_idx))
     
-    
-    def RANDOM_GAME(self,starter = 0):
+    def RESET_GAME(self,):
+        [i.RESET_HAND() for i in self._players]
+    def RANDOM_GAME(self,starter = 0,set_trump = None):
         self._starter = starter
         self._turn = starter
         
@@ -78,7 +79,7 @@ class GAME:
         
         player_moves = [-1] * len(self._players)
         player_pts = [0] * len(self._players)
-        trump = None
+        trump = set_trump
         
         while sum(player_pts) < 7:
             # print(self._turn)
@@ -86,8 +87,10 @@ class GAME:
             
             m1 = self.RANDOM_MOVE(self._players[self._turn].PLAYABLE())
             self._players[self._turn].KILL(m1)
-            moves.append(m1.GET())
+            
             player_moves[self._turn] = m1
+            
+            print(f'Player {self._turn+1} leads with {m1.GET()}')
             
             self._turn = self.CYCLE_TURN(self._turn)
             
@@ -95,14 +98,14 @@ class GAME:
             
             m2 = self.RANDOM_MOVE(self._players[self._turn].PLAYABLE(suit_lead))
             self._players[self._turn].KILL(m2)
-            moves.append(m2.GET())
+            
             player_moves[self._turn] = m2
             
             self._turn = self.CYCLE_TURN(self._turn)
             
             m3 = self.RANDOM_MOVE(self._players[self._turn].PLAYABLE(suit_lead))
             self._players[self._turn].KILL(m3)
-            moves.append(m3.GET())
+           
             player_moves[self._turn] = m3
             
             # print(suit_lead)
@@ -111,8 +114,9 @@ class GAME:
             # print('Winner IDX')
             # print([i.GET() for i in [m1,m2,m3]])
             # print(self.HAND_WINNER([m1,m2,m3],suit_lead,None))
-            self._turn = self.HAND_WINNER([m1,m2,m3],suit_lead,trump)
-            print(f'Player {self._turn + 1} Wins.')
+            moves.append([i.GET() for i in player_moves])
+            self._turn = self.HAND_WINNER(player_moves,suit_lead,trump)
+            print(f'Player {self._turn + 1} wins with {player_moves[self._turn].GET()}.')
             player_pts[self._turn] += 1
             
         # # Check for Winner
@@ -120,6 +124,7 @@ class GAME:
         print(moves)
         # print(suit_lead)
         print(player_pts)
+        g1.RESET_GAME()
         return player_pts
     
 if __name__ == '__main__':
@@ -150,38 +155,38 @@ if __name__ == '__main__':
     
     bone = deck[21]
     
-    g1 = GAME(players,bone)
+    g1 = GAME(players.copy(),bone)
     
     assert g1.HAND_WINNER([DOMINO(3,3),DOMINO(2,2),DOMINO(1,5)], 1, None) == 2
     assert g1.HAND_WINNER([DOMINO(3,3),DOMINO(2,2),DOMINO(1,5)], 3, None) == 0
     assert g1.HAND_WINNER([DOMINO(3,5),DOMINO(1,1),DOMINO(3,3)], 3, None) == 2
     
     assert g1.HAND_WINNER([DOMINO(5,5),DOMINO(5,3),DOMINO(1,1)], 1, 5) == 0
-
+    assert g1.HAND_WINNER([DOMINO(6,4),DOMINO(4,3),DOMINO(2,2)], 4, None) == 0
     assert g1.HAND_WINNER([DOMINO(3,3),DOMINO(2,2),DOMINO(1,5)], 3, 2) == 1
     
     for i in players:
         print(i.HAND(True))
-
     print('and bone',[bone.GET()])
     print()
     print('Try a not so random game.')
     print()
     
-    assert g1.RANDOM_GAME() == [3,1,3]
+    assert g1.RANDOM_GAME() == [1,5,1]
+    
+    assert g1.RANDOM_GAME(1) == [1,2,4]
+    
+    assert g1.RANDOM_GAME(2) == [1,2,4]
+    
+    out = {}
+    for i in [0,1,2]:
+        for j in [1,2,3,4,5,6]:
+            out[f'{i}{j}'] = max(g1.RANDOM_GAME(i,j))
+            
+    assert g1.RANDOM_GAME(2,6) == [2,0,5]
     
     
     
-    # random.shuffle(deck.copy()) # Always will get the same deck.
-    
-    # show_deck(d1)
-    
-    
-    
-    # game = GAME([HAND(),HAND(),HAND()])
-    
-    
-    # game.DEAL()
     
     
 

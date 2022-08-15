@@ -16,6 +16,9 @@ class HAND:
     def ADD_DOMINO(self,DOMINO): # Maybe will be used for Adding Bone?
         self._hand[DOMINO] = True
         
+    def RESET_HAND(self,):
+        self._hand = {i:True for i in self._hand.keys()}
+        
     def USABLE(self,):
         usable = []
         for i in self._hand:
